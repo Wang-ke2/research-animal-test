@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>我的科研动物 · 科研动物图鉴</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/animals.js"></script>
+  <!-- html2canvas 用于生成分享图 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    .result-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1.5rem 1.2rem 2.5rem;
+    }
+    .animal-header {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .animal-emoji {
+      font-size: 5rem;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .animal-name-code {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+    .animal-code {
+      font-size: 1rem;
+      background: #ecf0f1;
+      display: inline-block;
+      padding: 0.2rem 1rem;
+      border-radius: 30px;
+      color: #5d6d7e;
+      letter-spacing: 2px;
+    }
+    .tagline {
+      font-size: 1.2rem;
+      color: #2c3e50;
+      font-style: italic;
+      margin: 1rem 0 0.8rem;
+    }
+    .energy-badge {
+      display: inline-block;
+      background: #e8f0fe;
+      padding: 0.4rem 1.2rem;
+      border-radius: 30px;
+      font-size: 1rem;
+      color: #2c3e50;
+      margin-bottom: 1.2rem;
+    }
+    .traits {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .trait-tag {
+      background: #f0f3f6;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      color: #2c3e50;
+    }
+    .section {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem 1.2rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      border: 1px solid #edf2f7;
+    }
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .section-title::before {
+      content: "▍";
+      margin-right: 8px;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+    .section-content p {
+      margin-bottom: 0.8rem;
+      line-height: 1.5;
+    }
+    .section-content strong {
+      color: #2c3e50;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .btn {
+      flex: 1;
+      background: white;
+      border: 1.5px solid #2c3e50;
+      color: #2c3e50;
+      border-radius: 60px;
+      padding: 0.9rem 0;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .btn-primary {
+      background: #2c3e50;
+      color: white;
+      border: none;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .share-tip {
+      text-align: center;
+      margin-top: 1rem;
+      color: #7f8c8d;
+      font-size: 0.8rem;
+    }
+    #result-card {
+      /* 用于截图 */
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="result-container" v-if="animalData">
+      <div id="result-card">
+        <div class="animal-header">
+          <div class="animal-emoji">{{ animalEmoji }}</div>
+          <div class="animal-name-code">{{ animalData.name }} <span class="animal-code">{{ result.animalCode }}</span></div>
+          <div class="tagline">“{{ animalData.tagline }}”</div>
+          <div class="energy-badge">{{ result.energy }}</div>
+        </div>
+
+        <div class="traits">
+          <span class="trait-tag" v-for="t in animalData.traits" :key="t">#{{ t }}</span>
+        </div>
+
+        <div class="section">
+          <div class="section-title">学术生存指南</div>
+          <div class="section-content">
+            <p><strong>优势场景：</strong>{{ animalData.survival.strength }}</p>
+            <p><strong>潜在盲区：</strong>{{ animalData.survival.blind }}</p>
+            <p><strong>自救提醒：</strong>{{ animalData.survival.tip }}</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">协作说明书</div>
+          <div class="section-content">
+            <p><strong>给同门：</strong>{{ animalData.collaboration.peer }}</p>
+            <p><strong>给导师：</strong>{{ animalData.collaboration.mentor }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn" @click="retest">再测一次</button>
+        <button class="btn btn-primary" @click="generateShare">生成分享图</button>
+      </div>
+      <div class="share-tip">点击分享图可保存到相册</div>
+    </div>
+    <div v-else class="error-state">
+      <p>暂无结果，请先完成测试</p>
+      <button class="btn btn-primary" @click="goTest">去测试</button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    // 动物图标映射（用emoji作为占位，可替换为图片）
+    const emojiMap = {
+      'REPV':'🦄', 'REPC':'🐙', 'RTPV':'🪼', 'RTPC':'🦔',
+      'MEPV':'🐦', 'MEPC':'🐂', 'MTPV':'🕷️', 'MTPC':'🐦‍⬛',
+      'REAV':'🐋', 'REAC':'🐝', 'RTAV':'🐀', 'RTAC':'🐜',
+      'MEAV':'🐺', 'MEAC':'🦫', 'MTAV':'🐚', 'MTAC':'🐝',
+      '游牧民':'🐫'
+    };
+
+    const app = createApp({
+      setup() {
+        const result = ref(null);
+        const animalData = ref(null);
+        const animalEmoji = ref('');
+
+        function loadResult() {
+          const stored = localStorage.getItem('testResult');
+          if (!stored) {
+            animalData.value = null;
+            return;
+          }
+          try {
+            const parsed = JSON.parse(stored);
+            result.value = parsed;
+            const code = parsed.animalCode;
+            // 从animals.js中获取动物数据
+            animalData.value = animals[code] || animals['游牧民'];
+            animalEmoji.value = emojiMap[code] || '🐾';
+          } catch(e) {
+            console.error('解析结果失败', e);
+            animalData.value = null;
+          }
+        }
+
+        function retest() {
+          localStorage.removeItem('testResult');
+          localStorage.removeItem('testAnswers');
+          window.location.href = 'test.html';
+        }
+
+        function goTest() {
+          window.location.href = 'test.html';
+        }
+
+        async function generateShare() {
+          const element = document.getElementById('result-card');
+          if (!element) return;
+          try {
+            const canvas = await html2canvas(element, {
+              scale: 1.8,
+              backgroundColor: '#ffffff',
+              allowTaint: false,
+              useCORS: true,
+              logging: false
+            });
+            const link = document.createElement('a');
+            link.download = `科研动物_${result.value?.animalCode || 'unknown'}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+          } catch(e) {
+            alert('生成图片失败，可尝试截图保存');
+            console.error(e);
+          }
+        }
+
+        onMounted(() => {
+          loadResult();
+        });
+
+        return {
+          result,
+          animalData,
+          animalEmoji,
+          retest,
+          goTest,
+          generateShare
+        };
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>

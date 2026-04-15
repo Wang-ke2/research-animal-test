@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>科研动物图鉴</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 启动页特有样式 */
+    .index-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      background: linear-gradient(145deg, #f5f7fa 0%, #e9ecf2 100%);
+    }
+    .logo-area {
+      margin-bottom: 2.5rem;
+    }
+    .animal-icons {
+      font-size: 4rem;
+      line-height: 1.4;
+      letter-spacing: 8px;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+    .slogan {
+      font-size: 1.1rem;
+      color: #5d6d7e;
+      margin-bottom: 3rem;
+      font-weight: 400;
+    }
+    .test-count {
+      background: rgba(44, 62, 80, 0.08);
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      color: #2c3e50;
+      margin-bottom: 2.5rem;
+      display: inline-block;
+    }
+    .start-btn {
+      background: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 60px;
+      padding: 1rem 3.5rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 2rem;
+    }
+    .start-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 5px 10px rgba(44, 62, 80, 0.2);
+    }
+    .footer-note {
+      color: #95a5a6;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="index-container">
+    <div class="logo-area">
+      <div class="animal-icons">🦄🐙🪸🐜</div>
+      <h1>科研动物图鉴</h1>
+      <div class="slogan">发现你的学术人格</div>
+    </div>
+    <div class="test-count">已有 2,341 位科研人找到自己的动物</div>
+    <button class="start-btn" id="startBtn">开始测试</button>
+    <div class="footer-note">22道题 · 约3分钟</div>
+  </div>
+
+  <script>
+    document.getElementById('startBtn').addEventListener('click', function() {
+      // 清空之前可能残留的答题结果
+      localStorage.removeItem('testAnswers');
+      localStorage.removeItem('testResult');
+      window.location.href = 'test.html';
+    });
+  </script>
+</body>
+</html>
